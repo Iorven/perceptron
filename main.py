@@ -16,8 +16,8 @@ def main(args):
     ## training stage
     params                 = read_wavfile_wtih_scipy(training_set)
     
-    plt.plot(params)
-    plt.show()
+    # plt.plot(params)
+    # plt.show()
 
 
 def find_wav_fpaths(dir_path):
@@ -72,16 +72,40 @@ def split_train_test(wav_files):
 
 def read_wavfile_wtih_scipy(training_set):
 
-    results = []
+    # results = []
+
+    # for wav_file in training_set:
+
+    #     # TO-DO set variable name properly
+
+    #     input_data = scipy.io.wavfile.read(wav_file[0])[1]
+    #     results.append(np.mean(input_data))
+
+    # return results
+
+    results_silent = []
+    results_voiced = []
 
     for wav_file in training_set:
+
+        print(wav_file)
 
         # TO-DO set variable name properly
 
         input_data = scipy.io.wavfile.read(wav_file[0])[1]
-        results.append(np.mean(input_data))
 
-    return results
+        if wav_file[1] == '1':
+            results_voiced.append(np.mean(input_data))
+        elif wav_file[1] == '0':
+            results_silent.append(np.mean(input_data))
+
+    plt.plot(results_voiced, 'b')
+    plt.plot(results_silent, 'r')
+    plt.show()
+
+
+
+    return results_silent + results_voiced
 
 
 def parser():
