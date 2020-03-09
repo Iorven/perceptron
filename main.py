@@ -13,11 +13,11 @@ def main(args):
     wav_files              = append_labels(wav_files)
     test_set, training_set = split_train_test(wav_files)
 
-    ## training stage
+    ## training
     params                 = read_wavfile_wtih_scipy(training_set)
     
-    # plt.plot(params)
-    # plt.show()
+    plt.plot(params)
+    
 
 
 def find_wav_fpaths(dir_path):
@@ -72,38 +72,21 @@ def split_train_test(wav_files):
 
 def read_wavfile_wtih_scipy(training_set):
 
-    # results = []
-
-    # for wav_file in training_set:
-
-    #     # TO-DO set variable name properly
-
-    #     input_data = scipy.io.wavfile.read(wav_file[0])[1]
-    #     results.append(np.mean(input_data))
-
-    # return results
-
     results_silent = []
     results_voiced = []
 
-    for wav_file in training_set:
+    for sample_wav in training_set:
 
-        print(wav_file)
+        input_data = scipy.io.wavfile.read(sample_wav[0])[1]
 
-        # TO-DO set variable name properly
-
-        input_data = scipy.io.wavfile.read(wav_file[0])[1]
-
-        if wav_file[1] == '1':
+        if sample_wav[1] == '1':
             results_voiced.append(np.mean(input_data))
-        elif wav_file[1] == '0':
+        elif sample_wav[1] == '0':
             results_silent.append(np.mean(input_data))
 
     plt.plot(results_voiced, 'b')
     plt.plot(results_silent, 'r')
     plt.show()
-
-
 
     return results_silent + results_voiced
 
@@ -111,8 +94,15 @@ def read_wavfile_wtih_scipy(training_set):
 def parser():
 
     parser = argparse.ArgumentParser(description="Separating silent waves from louder waves")
-    parser.add_argument('-p', '--dir_path', type=str, required=True, help="give path to the file with waves.")
+    parser.add_argument('-p', '--dir_path', type=dir_path, required=True, help="give path to the file with waves.")
     return parser.parse_args()
+
+
+def dir_path(string):
+    if os.path.isdir(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
 
 
 if __name__ == '__main__':
