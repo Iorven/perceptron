@@ -5,6 +5,7 @@ import numpy as np
 import scipy
 import scipy.io.wavfile
 from matplotlib import pyplot as plt
+import perceptronlib as plib
 
 
 def main(args):
@@ -14,10 +15,13 @@ def main(args):
     test_set, training_set = split_train_test(wav_files)
 
     ## training
-    params                 = read_wavfile_wtih_scipy(training_set)
-    
-    plt.plot(params)
-    
+    params                 = read_wavfile_with_scipy(training_set)
+    print(params)
+    # plt.plot(params, 'b')
+    # plt.show()
+
+    weights = plib.train_weights(dataset, 0.01,100)
+    print(weights)
 
 
 def find_wav_fpaths(dir_path):
@@ -70,7 +74,7 @@ def split_train_test(wav_files):
     return test, train
 
 
-def read_wavfile_wtih_scipy(training_set):
+def read_wavfile_with_scipy(training_set):
 
     results_silent = []
     results_voiced = []
@@ -80,15 +84,22 @@ def read_wavfile_wtih_scipy(training_set):
         input_data = scipy.io.wavfile.read(sample_wav[0])[1]
 
         if sample_wav[1] == '1':
-            results_voiced.append(np.mean(input_data))
+            results_voiced.append((np.mean(input_data),1))
         elif sample_wav[1] == '0':
-            results_silent.append(np.mean(input_data))
+            results_silent.append((np.mean(input_data),0))
 
-    plt.plot(results_voiced, 'b')
-    plt.plot(results_silent, 'r')
-    plt.show()
+    # plt.plot(results_voiced, 'b')
+    # plt.plot(results_silent, 'r')
+    # plt.show()
 
-    return results_silent + results_voiced
+    # shuffle silence and voiced wavs
+    sum_results = results_silent + results_voiced
+    arr = np.asarray(sum_results)
+    np.random.shuffle(arr)
+    sum_results = arr.tolist()
+
+
+    return sum_results
 
 
 def parser():
