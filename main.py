@@ -10,17 +10,13 @@ import perceptronlib as plib
 
 def main(args):
     
-    wav_files              = find_wav_fpaths(args.dir_path)
+    wav_files              = find_wav_fpaths(path)
     wav_files              = append_labels(wav_files)
     test_set, training_set = split_train_test(wav_files)
 
-    ## training
+    # training
     params                 = read_wavfile_with_scipy(training_set)
-    print(params)
-    # plt.plot(params, 'b')
-    # plt.show()
-
-    weights = plib.train_weights(dataset, 0.01,100)
+    weights = plib.train_weights(params,l_rate,epochs)
     print(weights)
 
 
@@ -42,6 +38,9 @@ def find_wav_fpaths(dir_path):
 
 
 def append_labels(wav_files):
+    """
+    appends a label to wav_file: 1 for voiced, 0 for silent
+    """
 
     results = []
     
@@ -82,22 +81,19 @@ def read_wavfile_with_scipy(training_set):
     for sample_wav in training_set:
 
         input_data = scipy.io.wavfile.read(sample_wav[0])[1]
+        input_data = np.absolute(input_data)
 
         if sample_wav[1] == '1':
-            results_voiced.append((np.mean(input_data),1))
+            results_voiced.append([np.sum(input_data),np.mean(input_data),1])
         elif sample_wav[1] == '0':
-            results_silent.append((np.mean(input_data),0))
+            results_silent.append([np.sum(input_data),np.mean(input_data),0])
 
-    # plt.plot(results_voiced, 'b')
-    # plt.plot(results_silent, 'r')
-    # plt.show()
 
     # shuffle silence and voiced wavs
     sum_results = results_silent + results_voiced
     arr = np.asarray(sum_results)
     np.random.shuffle(arr)
     sum_results = arr.tolist()
-
 
     return sum_results
 
@@ -106,7 +102,11 @@ def parser():
 
     parser = argparse.ArgumentParser(description="Separating silent waves from louder waves")
     parser.add_argument('-p', '--dir_path', type=dir_path, required=True, help="give path to the file with waves.")
-    return parser.parse_args()
+    parser.add_argument('-l', '--learning_rate', type=float, required=True, help="learning rate of the training algorithm.")
+    parser.add_argument('-e', '--epochs', type=int, required=True, help="Number of epochs.")
+    args = parser.parse_args()
+
+    return args.dir_path, args.learning_rate, args.epochs
 
 
 def dir_path(string):
@@ -118,5 +118,5 @@ def dir_path(string):
 
 if __name__ == '__main__':
 
-    args = parser()
-    main(args)
+    path, l_rate, epochs = parser()
+    main(path)
