@@ -1,4 +1,4 @@
-# perceptron
+# Perceptron
 Perceptron trained to detect voiced wave files. The notebook about this project can be found [here](https://htmlpreview.github.io/?https://github.com/Iorven/perceptron/blob/master/Perceptron%20Notebook.html).
 
 ## Dependencies
